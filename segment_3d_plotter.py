@@ -5,12 +5,15 @@ import torch
 from cheetah import Segment, Dipole, Quadrupole, BPM, Drift, ParticleBeam
 
 # Path to the .gltf files of Quadrupole and Dipole Models
-DIPOLE_GLTF_FILE = "../3D_models/chenrans_hat_ares_ea_small_steerer.gltf"
-QUADRUPOLE_GLTF_FILE = "../3D_models/chenrans_hat_ares_ea_quadrupole.gltf"
+DIPOLE_GLTF_FILE = "3D_models/chenrans_hat_ares_ea_small_steerer.gltf"
+QUADRUPOLE_GLTF_FILE = "3D_models/chenrans_hat_ares_ea_quadrupole.gltf"
 
 # Color scheme for Quadrupole and Dipole Meshes
 QUADRUPOLE_COLOR_SCHEME = [None, None, None, None, "red", "orange"]
 DIPOLE_COLOR_SCHEME = [None, None, None, None, "yellow", "blue"]
+
+# Particle Beam file
+PARTICLE_BEAM_FILE = "3D_models/ACHIP_EA1_2021.1351.001"
 
 # Orientation with respect to the Beam
 SCALE_FACTOR = 0.25
@@ -119,9 +122,7 @@ class Segment3DPlotter:
                 )  # For Drift/BPM elements, just update position
 
         # Need to work on plotting the beam better
-        incoming_beam = ParticleBeam.from_astra(
-            "../cheetah/tests/resources/ACHIP_EA1_2021.1351.001"
-        )
+        incoming_beam = ParticleBeam.from_astra(PARTICLE_BEAM_FILE)
         outgoing_beam = self.segment.track(incoming_beam)
         for i in range(10):
             # Beam path visualization
