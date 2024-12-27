@@ -4,9 +4,15 @@ import math
 import torch
 from cheetah import Segment, Dipole, Quadrupole, BPM, Drift, ParticleBeam
 
+# Path to the .gltf files of Quadrupole and Dipole Models
 DIPOLE_GLTF_FILE = "../3D_models/chenrans_hat_ares_ea_small_steerer.gltf"
 QUADRUPOLE_GLTF_FILE = "../3D_models/chenrans_hat_ares_ea_quadrupole.gltf"
 
+# Color scheme for Quadrupole and Dipole Meshes
+QUADRUPOLE_COLOR_SCHEME = [None, None, None, None, "red", "orange"]
+DIPOLE_COLOR_SCHEME = [None, None, None, None, "yellow", "blue"]
+
+# Orientation with respect to the Beam
 SCALE_FACTOR = 0.25
 ROTATION_ANGLE = math.pi / 2
 ROTATION_AXIS = [0, 1, 0]
@@ -38,18 +44,19 @@ class Segment3DPlotter:
             0.0  # Track current longitudinal position along the segment
         )
 
-    def load_and_transform_mesh(self, filename, translation_vector, color="white"):
+    def load_and_transform_mesh(self, filename, translation_vector, color_scheme):
         """
         Loads a 3D model from file, applies transformations, and adds it to the plotter.
         :param filename: Path to the 3D model file.
         :param translation_vector: Translation vector to place the model in the correct position.
-        :param color: Color of the mesh in the plot.
+        :param color_scheme: Color Scheme of the mesh in the plot.
         """
         scene = trimesh.load(filename)
         rot_matrix = trimesh.transformations.rotation_matrix(
             self.rotation_angle, self.rotation_axis
         )
 
+        i = 0
         for name, mesh in scene.geometry.items():
             # Apply scaling, rotation, and translation
             mesh.apply_scale(self.scale_factor)
@@ -60,7 +67,8 @@ class Segment3DPlotter:
             pv_mesh = pv.wrap(mesh)
 
             # Add to the plotter
-            self.plotter.add_mesh(pv_mesh, color=color, label=name)
+            self.plotter.add_mesh(pv_mesh, color=color_scheme[i], label=name)
+            i += 1
 
     def plot_dipole(self, element):
         """
@@ -69,7 +77,11 @@ class Segment3DPlotter:
         """
         translation_vector = [0, 0.075, self.current_position]
         # Example .gltf file for Dipole, you can replace it with the actual model path
-        self.load_and_transform_mesh(DIPOLE_GLTF_FILE, translation_vector, color="red")
+        self.load_and_transform_mesh(
+            filename=DIPOLE_GLTF_FILE,
+            translation_vector=translation_vector,
+            color_scheme=DIPOLE_COLOR_SCHEME,
+        )
         print(f"Plotted Dipole: {element.name} at position {self.current_position}")
 
     def plot_quadrupole(self, element):
@@ -80,7 +92,9 @@ class Segment3DPlotter:
         translation_vector = [0, 0, self.current_position]
         # Example .gltf file for Quadrupole, you can replace it with the actual model path
         self.load_and_transform_mesh(
-            QUADRUPOLE_GLTF_FILE, translation_vector, color="blue"
+            filename=QUADRUPOLE_GLTF_FILE,
+            translation_vector=translation_vector,
+            color_scheme=QUADRUPOLE_COLOR_SCHEME,
         )
         print(f"Plotted Quadrupole: {element.name} at position {self.current_position}")
 
